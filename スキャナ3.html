@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QRテスト</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    #reader { width: 300px; margin: auto; }
+  </style>
+</head>
+<body>
+  <h2>QRテストページ</h2>
+  <div id="reader"></div>
+  <p id="result">スキャン待機中...</p>
+
+  <script>
+    const qrScanner = new Html5Qrcode("reader");
+    qrScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (decodedText) => {
+        document.getElementById("result").innerText = "読み取り成功: " + decodedText;
+        qrScanner.stop(); // 一度でストップ
+      },
+      (error) => {}
+    ).catch(err => {
+      document.getElementById("result").innerText = "カメラ起動に失敗しました：" + err;
+    });
+  </script>
+</body>
+</html>
