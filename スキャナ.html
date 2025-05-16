@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QRスキャン | CROSTAFF</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f9f9f9;
+      text-align: center;
+      padding: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    #reader {
+      width: 320px;
+      margin: 20px auto;
+    }
+    #result {
+      margin-top: 10px;
+      font-size: 1.1em;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <h2>QRスキャン画面 - CROSTAFF</h2>
+  <div id="reader"></div>
+  <p id="result">スキャン待機中...</p>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1tHjBJMPVZIuuuGUsDdyfFenpM2gendD7Ee_8ES9qncs1puljjJ4ZPe8r-bAP-racAQ/exec"; // ご自身のURLに置き換えてください
+
+    function sendScan(decodedText) {
+      const params = new URLSearchParams();
+      params.append("user_id", decodedText);
+      params.append("timestamp", new Date().toISOString());
+
+      fetch(SCRIPT_URL + "?" + params.toString())
+        .then(response => response.text())
+        .then(result => {
+          document.getElementById("result").innerText = "送信完了：" + decodedText;
+        })
+        .catch(error => {
+          document.getElementById("result").innerText = "送信失敗：" + error;
+        });
+    }
+
+    const qrScanner = new Html5Qrcode("reader");
+    qrScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (decodedText) => {
+        document.getElementById("result").innerText = "読み取り中…";
+        sendScan(decodedText);
+        qrScanner.stop(); // 一度スキャンしたら止める（連続読み込みを防ぐ）
+      },
+      (error) => {
+        // 読み取りエラーは無視
+      }
+    ).catch(err => {
+      document.getElementById("result").innerText = "カメラ起動失敗：" + err;
+    });
+  </script>
+</body>
+</html>
