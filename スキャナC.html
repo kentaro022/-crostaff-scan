@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RoomB スキャナ</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+  <h1>RoomB スキャナ</h1>
+  <div id="reader" style="width:300px;"></div>
+  <script>
+    const room = "RoomB";
+    const scanner = new Html5Qrcode("reader");
+    scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      async (decodedText) => {
+        try {
+          const url = new URL(decodedText);
+          url.searchParams.append("room", room);
+          const res = await fetch(url.toString());
+          const text = await res.text();
+          alert(text);
+        } catch (e) {
+          alert("読み取り失敗: " + e);
+        }
+      }
+    );
+  </script>
+</body>
+</html>
